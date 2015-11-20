@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang='ru'>
+<head>
+  <meta charset='utf-8'>
+  <title>Homework</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+<style>
+  html, body,
+  .content {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 4em;
+  }
+
+  div, button, textarea {
+    -moz-box-sizing: border-box; box-sizing: border-box;
+  }
+
+  .panels-container {
+    display: flex;
+  }
+
+  .input-panel {
+    width: 30%;
+  }
+
+  .output-panel {
+    width: 70%;
+    padding-bottom: 6em;
+    background-color: #fcfafa;
+  }
+
+  .inputs-container {
+    margin-top: 60px;
+    margin-left: 20px;
+  }
+
+  .input-original, .input-corrected {
+    display: block;
+    margin: 0;
+    width: 90%;
+    height: 150px;
+    border: none;
+    border-bottom: 1px dotted gainsboro;
+    color: lightgray;
+  }
+
+  .outputs-container {
+    margin: 60px 120px;
+  }
+
+  .sentences-line {
+    position: relative;
+    margin-bottom: 2em;
+  }
+
+  .original-sentence {
+    color: #afaaaa;
+  }
+
+  .corrected-sentence {
+    position: absolute;
+    top: 2em;
+  }
+
+  .equal .corrected-sentence {
+    color: #afaaaa;
+  }
+
+  .equal::before {
+    content: '✓';
+    position: absolute;
+    display: inline-block;
+    margin-left: -1.5em;
+    width: 1.4em;
+    color: MediumSpringGreen;
+  }
+
+</style>
+</head>
+<body>
+  <div class='content'>
+    <div class='panels-container'>
+      <div class='input-panel'>
+        <div class='inputs-container'>
+          <textarea class='input-original'>The original text.</textarea>
+          <textarea class='input-corrected'>The corrected text.</textarea>
+        </div>
+      </div>
+      <div class='output-panel'><div class='outputs-container'></div></div>
+    </div>
+  </div>
+
+<script>
+  'use strict';
+
+  var inputOriginal, inputCorrected, output;
+
+  var inputOriginalClass  = '.input-original';
+  var inputCorrectedClass = '.input-corrected';
+  var outputClass = '.outputs-container';
+
+  function init() {
+    inputOriginal  = document.querySelector(inputOriginalClass);
+    inputCorrected = document.querySelector(inputCorrectedClass);
+    output = document.querySelector(outputClass);
+
+    inputOriginal.addEventListener('input', sync, false);
+    inputCorrected.addEventListener('input', sync, false);
+  }
+
+  function splitIntoSentences(text) {
+    return text.match(/[^\.!\?]+[\.!\?]+/g);
+  }
+
+  function getComparisons(strArrayA, strArrayB) {
+    var limit = strArrayA.length > strArrayB.length ? strArrayA.length : strArrayB.length;
+    var comparisons = [];
+
+    for (var i = 0; i < limit; i++) {
+      var currentStrA = strArrayA[i];
+      var currentStrB = strArrayB[i];
+      var isEqual = false;
+
+      if (currentStrA && currentStrB && currentStrA.localeCompare(currentStrB) == 0) {
+        isEqual = true;
+      }
+
+      comparisons.push(isEqual);
+    }
+
+    return comparisons;
+  }
+
+  function getSentencesAsHTML(originalSentences, correctedSentences, comparisons) {
+    var divs = '';
+    var limit = originalSentences.length > correctedSentences.length ? originalSentences.length : correctedSentences.length;
+
+    for (var i = 0; i < limit; i++) {
+      var originalSentence  = originalSentences[i]  || '—';
+      var correctedSentence = correctedSentences[i] || '—';
+      var equalClass = comparisons[i] ? ' equal' : '';
+
+      var htmlStr =
+        '<div class="sentences-line' + equalClass + '">' +
+          '<div class="original-sentence">'  + originalSentence  + '</div>' +
+          '<div class="corrected-sentence">' + correctedSentence + '</div>' +
+        '</div>';
+
+      divs += htmlStr;
+    }
+
+    return divs;
+  }
+
+  function getComparedSentencesAsHTML(originalText, correctedText) {
+    var originalSentences  = splitIntoSentences(originalText);
+    var correctedSentences = splitIntoSentences(correctedText);
+
+    var comparisons = getComparisons(originalSentences, correctedSentences);
+
+    return getSentencesAsHTML(originalSentences, correctedSentences, comparisons);
+  }
+
+  function sync() {
+    output.innerHTML = getComparedSentencesAsHTML(inputOriginal.value, inputCorrected.value);
+  }
+
+  window.onload = function() {
+    init();
+    sync();
+  };
+</script>
+</body>
+</html>
