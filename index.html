@@ -115,7 +115,7 @@
   }
 
   function splitIntoSentences(text) {
-    return text.match(/[^\.!\?]+[\.!\?]+/g);
+    return text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
   }
 
   function getComparisons(strArrayA, strArrayB) {
@@ -168,7 +168,10 @@
   }
 
   function sync() {
-    output.innerHTML = getComparedSentencesAsHTML(inputOriginal.value, inputCorrected.value);
+    var original  = inputOriginal.value  || 'The original text.';
+    var corrected = inputCorrected.value || 'The corrected text.';
+
+    output.innerHTML = getComparedSentencesAsHTML(original, corrected);
   }
 
   window.onload = function() {
