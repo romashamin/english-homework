@@ -2,4 +2,4 @@
 
 Helps to compare the original text and the corrected one.
 
-[Check your homework](http://username.github.io/repository).
+[Check your homework](http://romashamin.github.io/english-homework).
